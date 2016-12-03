@@ -1,0 +1,761 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.useso.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="ac自动机," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="AC自动机简介： 首先简要介绍一下AC自动机：Aho-Corasick automation，该算法在1975年产生于贝尔实验室，是著名的多模匹配算法之一。一个常见的例子就是给出n个单词，再给出一段包含m个字符的文章，让你找出有多少个单词在文章里出现过。嗯没错，比如word文档等一系列带有查找功能的东西一般用的都是这种东西啦。要搞懂AC自动机，先得有字典树Trie和KMP模式匹配算法的基础知识。K">
+<meta property="og:type" content="article">
+<meta property="og:title" content="算法讲解：ac自动机及简单衍生">
+<meta property="og:url" content="http://yoursite.com/2016/12/03/算法讲解：ac自动机及简单衍生/index.html">
+<meta property="og:site_name" content="thunderMrbird的blog">
+<meta property="og:description" content="AC自动机简介： 首先简要介绍一下AC自动机：Aho-Corasick automation，该算法在1975年产生于贝尔实验室，是著名的多模匹配算法之一。一个常见的例子就是给出n个单词，再给出一段包含m个字符的文章，让你找出有多少个单词在文章里出现过。嗯没错，比如word文档等一系列带有查找功能的东西一般用的都是这种东西啦。要搞懂AC自动机，先得有字典树Trie和KMP模式匹配算法的基础知识。K">
+<meta property="og:image" content="http://www.cppblog.com/images/cppblog_com/hunter/z200777202049.jpg">
+<meta property="og:image" content="http://img.blog.csdn.net/20140330020159171?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbW9iaXVzX3N0cmlw/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:updated_time" content="2016-12-03T15:14:20.389Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="算法讲解：ac自动机及简单衍生">
+<meta name="twitter:description" content="AC自动机简介： 首先简要介绍一下AC自动机：Aho-Corasick automation，该算法在1975年产生于贝尔实验室，是著名的多模匹配算法之一。一个常见的例子就是给出n个单词，再给出一段包含m个字符的文章，让你找出有多少个单词在文章里出现过。嗯没错，比如word文档等一系列带有查找功能的东西一般用的都是这种东西啦。要搞懂AC自动机，先得有字典树Trie和KMP模式匹配算法的基础知识。K">
+<meta name="twitter:image" content="http://www.cppblog.com/images/cppblog_com/hunter/z200777202049.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '6359826799316174000',
+      author: 'thunderMrbird'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/12/03/算法讲解：ac自动机及简单衍生/"/>
+
+
+
+
+
+  <title> 算法讲解：ac自动机及简单衍生 | thunderMrbird的blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">thunderMrbird的blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/12/03/算法讲解：ac自动机及简单衍生/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="李丰基">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.gif">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="thunderMrbird的blog">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="thunderMrbird的blog" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                算法讲解：ac自动机及简单衍生
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-12-03T23:05:10+08:00">
+                2016-12-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/算法/" itemprop="url" rel="index">
+                    <span itemprop="name">算法</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <a href="/2016/12/03/算法讲解：ac自动机及简单衍生/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/12/03/算法讲解：ac自动机及简单衍生/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p></p><h1>AC自动机简介： </h1><br>首先简要介绍一下AC自动机：Aho-Corasick automation，该算法在1975年产生于贝尔实验室，是著名的多模匹配算法之一。一个常见的例子就是给出n个单词，再给出一段包含m个字符的文章，让你找出有多少个单词在文章里出现过。嗯没错，比如word文档等一系列带有查找功能的东西一般用的都是这种东西啦。要搞懂AC自动机，先得有字典树Trie和KMP模式匹配算法的基础知识。KMP算法是单模式串的字符匹配算法，AC自动机是多模式串的字符匹配算法。至于什么有限状态自动机之类的，就是自动机理论的之后的事情了。嘛，在后面补了一下有限状态自动机的知识，有兴趣可以去下面看。<br><strong>AC自动机前置技能：</strong> trie树和kmp。<br>trie树呢，是一种存储了一系列字符的树，每个节点存储一个字符，在一棵树的分支进行遍历，每次都会得到一个存储好的字符串。<br><a id="more"></a><br>假设有b，abc，abd，bcd，abcd，efg，hii 这6个单词，我们构建的树就是如下图这样的：<br><img src="http://www.cppblog.com/images/cppblog_com/hunter/z200777202049.jpg"><br>这样就可以看出，查找一个字符串，那就直接顺着这个串找下去就好了，唔，时间复杂度貌似是O（1）的<br>trie树的用途也非常多，在这里就先不展开分析了，一般用于字符串的存储，查询之类的，具体问题可以参考我的其他题解。<br>这是poj2001的代码，trie树裸题，可以作为参考。<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cstdio&gt;</span>  </span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cstring&gt;</span>  </span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;algorithm&gt;</span>  </span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cmath&gt;</span>  </span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span>  </span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;vector&gt;</span>  </span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;string&gt;</span>  </span></div><div class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;  </div><div class="line"><span class="keyword">const</span> <span class="keyword">int</span> MAXN=<span class="number">3000000</span>;  </div><div class="line"><span class="keyword">typedef</span> <span class="keyword">long</span> <span class="keyword">long</span> ll;  </div><div class="line"><span class="keyword">char</span> s[<span class="number">10005</span>][<span class="number">31</span>];  </div><div class="line"><span class="keyword">struct</span> node  </div><div class="line">&#123;  </div><div class="line">    <span class="keyword">int</span> num;  </div><div class="line">    node* next[<span class="number">26</span>];  </div><div class="line">    node()  </div><div class="line">    &#123;  </div><div class="line">        <span class="built_in">memset</span>(next,<span class="literal">NULL</span>,<span class="keyword">sizeof</span>(next));  </div><div class="line">        num=<span class="number">0</span>;  </div><div class="line">    &#125;  </div><div class="line">&#125;;  </div><div class="line">node* root=<span class="keyword">new</span> node();  </div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">build</span><span class="params">(<span class="keyword">char</span> str[])</span>  </span></div><div class="line">&#123;  </div><div class="line">    node* p=root;  </div><div class="line">    <span class="keyword">int</span> len=<span class="built_in">strlen</span>(str);  </div><div class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;len;i++)  </div><div class="line">    &#123;  </div><div class="line">        <span class="keyword">int</span> index=str[i]-<span class="string">'a'</span>;  </div><div class="line">        <span class="keyword">if</span>(p-&gt;next[index]==<span class="literal">NULL</span>)  </div><div class="line">        &#123;  </div><div class="line">            p-&gt;next[index]=<span class="keyword">new</span> node();  </div><div class="line">        &#125;  </div><div class="line">        p=p-&gt;next[index];  </div><div class="line">        p-&gt;num++;  </div><div class="line">    &#125;  </div><div class="line">&#125;  </div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">query</span><span class="params">(<span class="keyword">char</span> str[])</span>  </span></div><div class="line">&#123;  </div><div class="line">    node* p=root;  </div><div class="line">    <span class="keyword">int</span> len=<span class="built_in">strlen</span>(str);  </div><div class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;len;i++)  </div><div class="line">    &#123;  </div><div class="line">        <span class="built_in">printf</span>(<span class="string">"%c"</span>,str[i]);  </div><div class="line">        <span class="keyword">int</span> index=str[i]-<span class="string">'a'</span>;  </div><div class="line">        p=p-&gt;next[index];  </div><div class="line">        <span class="keyword">if</span>(p-&gt;num==<span class="number">1</span>)  </div><div class="line">        <span class="keyword">return</span>;  </div><div class="line">    &#125;  </div><div class="line">&#125;  </div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span>  </span></div><div class="line">&#123;  </div><div class="line">    <span class="keyword">int</span> T;  </div><div class="line">    <span class="keyword">int</span> n=<span class="number">0</span>;  </div><div class="line">    <span class="keyword">while</span>(<span class="built_in">scanf</span>(<span class="string">"%s"</span>,s[n])!=EOF)  </div><div class="line">    &#123;  </div><div class="line">        build(s[n]);  </div><div class="line">        n++;  </div><div class="line">    &#125;  </div><div class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;n;i++)  </div><div class="line">    &#123;  </div><div class="line">        <span class="built_in">printf</span>(<span class="string">"%s "</span>,s[i]);  </div><div class="line">        query(s[i]);  </div><div class="line">        <span class="built_in">printf</span>(<span class="string">"\n"</span>);  </div><div class="line">    &#125;  </div><div class="line">    <span class="keyword">return</span> <span class="number">0</span>;  </div><div class="line">&#125;</div></pre></td></tr></table></figure><p></p>
+<p>下一个内容，kmp。<br>kmp是一种字符串的算法，貌似现在的strstr就是用kmp重写的，用的最多的当然就是查找一个字符串中有没有给定的字串，位置和个数了<br>因为朴素的查找方法是O(n^2)的，其中由于进行了回溯，导致效率的下降，但问题在于，回溯过去的子串我们已经查找过了，能否保留查找的内容呢？答案当然是可以的。<br>我们可以用一个next数组来保存前缀的值，每次失配就直接导向失配的上一个子串位置，从而减少了不必要的匹配过程，其中，next数组的求解方式类似于动态规划，事实上就是动态规划的一种思想。<br>在创建next数组的时候就相当于对本串进行一次kmp匹配。双指针扫两个串的两个点，同时前指针还有赋值的作用。<br><img src="http://img.blog.csdn.net/20140330020159171?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbW9iaXVzX3N0cmlw/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast"><br>接下来就进入ac自动机的正题：<br>ac自动机就是一种多模的匹配算法了，刚刚前置技能都已经讲完了，就直击原理，ac自动机本质上就是一棵trie树，存储了一系列单词，<br>但是和trie树不同的是，在每个节点中都存有一个fail指针，用于保存失配后所需要移动到的节点位置（是不是很眼熟，对了，就是kmp的next数组嘛）<br>既然我们知道了 AC自动机是用来做什么的，那么我们就来说一说怎么在 Trie上构造 AC自动机。<br>首先，我们看一下条转时的条件，如同 KMP算法一样， AC自动机在匹配时如果当前字符匹配失败，那么利用fail指针进行跳转。由此可知如果跳转，跳转到的串的前缀，必为跳转前的模式串的后缀。<br>由此可知，跳转的新位置的深度一定小于跳之前的节点。所以我们可以利用 bfs在 Trie上面进行 fail指针的求解。<br>下面，是具体的构造过程（和KMP是一样的）。首先 root节点的fail定义为空，然后每个节点的fail都取决自己的父节点的fail指针，<br>从父节点的fail出发，直到找到存在这个字符为边的节点（向回递归），将他的孩子赋值给寻找节点。如果找不到就指向根节点，具体参照代码：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span>  </span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;cstring&gt;</span>  </span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cstdio&gt;</span>  </span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;queue&gt;</span>  </span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;algorithm&gt;</span>  </span></div><div class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;  </div><div class="line"><span class="keyword">const</span> <span class="keyword">int</span> N = <span class="number">1000002</span>;  </div><div class="line"><span class="keyword">char</span> s[<span class="number">1000100</span>];  </div><div class="line"><span class="keyword">int</span> n;  </div><div class="line"><span class="keyword">struct</span> node  </div><div class="line">&#123;  </div><div class="line">    <span class="keyword">int</span> cnt;  </div><div class="line">    node* next[<span class="number">26</span>];  </div><div class="line">    node* fail;  </div><div class="line">    node()  </div><div class="line">    &#123;  </div><div class="line">        cnt=<span class="number">0</span>;  </div><div class="line">        fail=<span class="literal">NULL</span>;  </div><div class="line">        <span class="built_in">memset</span>(next,<span class="literal">NULL</span>,<span class="keyword">sizeof</span>(next));  </div><div class="line">    &#125;  </div><div class="line">&#125;;  </div><div class="line">node *root;  </div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">bfs</span><span class="params">()</span><span class="comment">//通过bfs寻找fail指针的值  </span></span></div><div class="line">&#123;  </div><div class="line">    node *p=root,*tmp,*son;  </div><div class="line">    <span class="built_in">queue</span>&lt;node*&gt; q;  </div><div class="line">    q.push(p);  </div><div class="line">    <span class="keyword">while</span>(!q.empty())  </div><div class="line">    &#123;  </div><div class="line">        tmp=q.front();  </div><div class="line">        q.pop();  </div><div class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;<span class="number">26</span>; i++)  </div><div class="line">        &#123;  </div><div class="line">            son=tmp-&gt;next[i]; <span class="comment">//队首元素的子节点  </span></div><div class="line">            <span class="keyword">if</span>(son!=<span class="literal">NULL</span>)  </div><div class="line">            &#123;  </div><div class="line">                p=tmp-&gt;fail; <span class="comment">//p作为保存节点 表示类似kmp当前k的值  </span></div><div class="line">                <span class="keyword">while</span>(p!=<span class="literal">NULL</span>)  </div><div class="line">                &#123;  </div><div class="line">                    <span class="keyword">if</span>(p-&gt;next[i]!=<span class="literal">NULL</span>)  </div><div class="line">                    &#123;  </div><div class="line">                        son-&gt;fail=p-&gt;next[i];  </div><div class="line">                        <span class="keyword">break</span>;  </div><div class="line">                    &#125;  </div><div class="line">                    p=p-&gt;fail;  </div><div class="line">                &#125;  </div><div class="line">                <span class="keyword">if</span>(!p) son-&gt;fail=root;  </div><div class="line">                q.push(son);  </div><div class="line">            &#125;  </div><div class="line">        &#125;  </div><div class="line">    &#125;  </div><div class="line">&#125;  </div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">insert</span><span class="params">()</span> <span class="comment">//和trie树一样的插入方式  </span></span></div><div class="line">&#123;  </div><div class="line">    node *p=root;  </div><div class="line">    <span class="keyword">int</span> len=<span class="built_in">strlen</span>(s);  </div><div class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;len; i++)  </div><div class="line">    &#123;  </div><div class="line">        <span class="keyword">int</span> index=s[i]-<span class="string">'a'</span>;  </div><div class="line">        <span class="comment">//printf("%d\n",index);  </span></div><div class="line">        <span class="keyword">if</span>(p-&gt;next[index]==<span class="literal">NULL</span>)  </div><div class="line">        &#123;  </div><div class="line">            p-&gt;next[index]=<span class="keyword">new</span> node();  </div><div class="line">        &#125;  </div><div class="line">        p=p-&gt;next[index];  </div><div class="line">    &#125;  </div><div class="line">    p-&gt;cnt++;  </div><div class="line">&#125;  </div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">query</span><span class="params">()</span>  </span></div><div class="line">&#123;  </div><div class="line">    <span class="keyword">int</span> ans=<span class="number">0</span>;  </div><div class="line">    node* p=root,*tmp;  </div><div class="line">    <span class="keyword">int</span> len=<span class="built_in">strlen</span>(s);  </div><div class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;len; i++)  </div><div class="line">    &#123;  </div><div class="line">        <span class="keyword">int</span> index=s[i]-<span class="string">'a'</span>;  </div><div class="line">        <span class="keyword">while</span>(p!=root&amp;&amp;p-&gt;next[index]==<span class="literal">NULL</span>) <span class="comment">//kmp中的k=next[k]的相同思路  </span></div><div class="line">        &#123;  </div><div class="line">            p=p-&gt;fail;  </div><div class="line">        &#125;  </div><div class="line">        p=p-&gt;next[index];<span class="comment">//下一节点  </span></div><div class="line">        <span class="keyword">if</span>(p==<span class="literal">NULL</span>)<span class="comment">//匹配失败 j=0  </span></div><div class="line">        &#123;  </div><div class="line">            p=root;  </div><div class="line">        &#125;  </div><div class="line">        tmp=p;  </div><div class="line">        <span class="keyword">while</span>(tmp!=root) <span class="comment">//与kmp不同，找寻所有满足子条件的节点。  </span></div><div class="line">        &#123;  </div><div class="line">            <span class="keyword">if</span>(tmp-&gt;cnt&gt;=<span class="number">0</span>)  </div><div class="line">            &#123;  </div><div class="line">                ans+=tmp-&gt;cnt;  </div><div class="line">                tmp-&gt;cnt=<span class="number">-1</span>;  </div><div class="line">            &#125;  </div><div class="line">            <span class="keyword">else</span>  </div><div class="line">                <span class="keyword">break</span>;  </div><div class="line">            tmp=tmp-&gt;fail;  </div><div class="line">        &#125;  </div><div class="line">    &#125;  </div><div class="line">    <span class="built_in">printf</span>(<span class="string">"%d\n"</span>,ans);  </div><div class="line">&#125;  </div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span>  </span></div><div class="line">&#123;  </div><div class="line">    <span class="keyword">int</span> tt=<span class="number">0</span>,T;  </div><div class="line">    <span class="built_in">scanf</span>(<span class="string">"%d"</span>,&amp;T);  </div><div class="line">    <span class="keyword">while</span>(T--)  </div><div class="line">    &#123;  </div><div class="line">        root = <span class="keyword">new</span> node();  </div><div class="line">        <span class="built_in">scanf</span>(<span class="string">"%d\n"</span>,&amp;n);  </div><div class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;n; i++)  </div><div class="line">        &#123;  </div><div class="line">            <span class="built_in">scanf</span>(<span class="string">"%s"</span>,s);  </div><div class="line">            <span class="comment">//printf("%s\n",s);  </span></div><div class="line">            insert();  </div><div class="line">        &#125;  </div><div class="line">        bfs();  </div><div class="line">        <span class="built_in">scanf</span>(<span class="string">"%s"</span>,s);  </div><div class="line">        query();  </div><div class="line">    &#125;  </div><div class="line">    <span class="keyword">return</span> <span class="number">0</span>;  </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>时间复杂度分析：<br>      对于Trie的匹配来说时间复杂性为：O(max(L(Pi))L(T))其中L串的长度函数，P是模式串，T是目标串。<br>      对于 AC自动机来说时间复杂性为：O(L(T)+max(L(Pi))+m)气质m是模式串的数量。<br>      对于 Trie 图 来说时间复杂性为：O(L(T))在此的时间复杂性都是指匹配的复杂度。<br>      对于构造的代价是 O(sum(L(Pi)))其中sum是求和函数。<br>嘛，因为学长说ac自动机太简单了（orz）所以要求我扩展一下ac自动机的内容：<br>trie图：<br>      在讲tire图的时候，先科普一下有限状态自动机的知识：<br>有限状态自动机是具有离散输入和输出的系统的一种数学模型。<br>其主要特点有以下几个方面：<br>– (1)系统具有有限个状态，不同的状态代表不同的意义。按照实际的需要，系统可以在不同的状态下完成规定的任务。<br>– (2)我们可以将输入字符串中出现的字符汇集在一起构成一个字母表。系统处理的所有字符串都是这个字母表上的字符串。<br>– (3)系统在任何一个状态下，从输入字符串中读入一个字符，根据当前状态和读入的这个字符转到新的状态。<br>– (4)系统中有一个状态，它是系统的开始状态。<br>– (5)系统中还有一些状态表示它到目前为止所读入的字符构成的字符串是语言的一个句子。<br>形式定义<br>· 定义：有限状态自动机(FA—finite automaton)是一个五元组：<br>– M=(Q, Σ, δ, q0, F)<br>· 其中，<br>– Q——状态的非空有穷集合。∀q∈Q，q称为M的一个状态。<br>– Σ——输入字母表。<br>– δ——状态转移函数，有时又叫作状态转换函数或者移动函数，δ：Q×Σ→Q，δ(q,a)=p。<br>– q0——M的开始状态，也可叫作初始状态或启动状态。q0∈Q。<br>– F——M的终止状态集合。F被Q包含。任给q∈F，q称为M的终止状态。<br>用几句话来概括就是：<br>把问题的求解过程划分成离散的“状态”，并用一个有向图建立状态（结点）的迁移关系。<br>实现一个程序单位，在给定初始状态后，能够根据输入信息实现状态间的迁移，并可以在有限步骤后迁移到预定的“终态”。<br>在迁移的过程中，问题得到解决。//摘自网上 这就是有限状态自动机的理论了，那么为什么要讲到这里呢，嗯，是为了引出确定性有限状态自动机和不确定性有限状态自动机的区别<br>tire图，说起来就是比ac自动机多了一个确定性<br>确定性是什么？<br>非确定有限状态自动机与确定有限状态自动机的唯一区别是它们的转移函数不同。确定有限状态自动机对每一个可能的输入只有一个状态的转移。非确定有限状态自动机对每一个可能的输入可以有多个状态转移，接受到输入时从这多个状态转移中非确定地选择一个。<br>trie图中会有补边这样一个机制，而且在根节点保存了所有字典中的字符从而满足了trie图的确定性：<br>也就是说，每一个确定的输入字符都会给你一个确定的状态节点<br>在ac自动机和trie图中，区别就是ac自动机失配后可能需要进行多次转移，但trie图只需要一次转移<br>Trie图是AC自动机的确定化形式，即把每个结点不存在字符的next指针都补全了。这样做的好处是使得构造fail指针时不需要next指针为空而需要不断回溯。</p>
+<p>比如构造next[cur][i]的fail指针，cur为父节点，next[cur][i]为cur的儿子结点，如果是AC自动机，如果父亲结点tmp(tmp是cur的一份拷贝）的next[fail[tmp]][i]不存在时，需要让tmp不断回溯(即tmp = fail[tmp])，直到next[fail[tmp]][i]不为空时，才让fail[next[cur][i]] = next[fail[tmp]][i]。</p>
+<p>如果是Trie图，那么直接让fail[next[cur][i]] = next[fail[cur]][i]就可以了，因为Trie图已经补全了next指针。</p>
+<p>嘛 ac自动机和trie图中的区别网络中众说纷纭，不管了，具体名词可能有所区别，但思想是不会变的<br>由于其实和ac自动机使用上几乎没有区别，实战上使用次数不多，以下就发一个代码作为trie图的总结。（在敲模板时发现trie图要比ac自动机好写一点，嘛，不过根据先入为主的原则，还是ac自动机要顺手吧）<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span>  </span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;cstring&gt;</span>  </span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;queue&gt;</span>  </span></div><div class="line">  </div><div class="line">  </div><div class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;  </div><div class="line">  </div><div class="line"><span class="keyword">struct</span> Trie  </div><div class="line">&#123;  </div><div class="line">    <span class="keyword">int</span> flag;  </div><div class="line">    <span class="keyword">struct</span> Trie* behind;  </div><div class="line">    <span class="keyword">struct</span> Trie* next[<span class="number">26</span>];  </div><div class="line">&#125;;  </div><div class="line">  </div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span>  </span></div><div class="line">&#123;  </div><div class="line">    <span class="keyword">int</span> n;  </div><div class="line">    <span class="keyword">char</span> s[<span class="number">100001</span>];  </div><div class="line">    <span class="built_in">cin</span> &gt;&gt; n;  </div><div class="line">    Trie* root = <span class="keyword">new</span> Trie;  </div><div class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">26</span>; i++)  </div><div class="line">    &#123;  </div><div class="line">        root-&gt;next[i] = <span class="literal">NULL</span>;  </div><div class="line">    &#125;  </div><div class="line">    root -&gt;behind = <span class="literal">NULL</span>;  </div><div class="line">    root -&gt;flag = <span class="number">0</span>;  </div><div class="line">    <span class="keyword">while</span> (n--)  </div><div class="line">    &#123;  </div><div class="line">        <span class="built_in">cin</span> &gt;&gt; s;  </div><div class="line">        Trie* p = root;  </div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; s[i]!=<span class="string">'\0'</span>; i++)  </div><div class="line">        &#123;  </div><div class="line">            <span class="keyword">int</span> j = s[i] - <span class="string">'a'</span>;  </div><div class="line">            <span class="keyword">if</span> (!p-&gt;next[j])  </div><div class="line">            &#123;  </div><div class="line">                Trie* q = <span class="keyword">new</span> Trie;  </div><div class="line">                q-&gt;flag = <span class="number">0</span>;  </div><div class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> k = <span class="number">0</span>; k &lt; <span class="number">26</span>; k++)  </div><div class="line">                &#123;  </div><div class="line">                    q-&gt;next[k] = <span class="literal">NULL</span>;  </div><div class="line">                &#125;  </div><div class="line">                q -&gt;behind = <span class="literal">NULL</span>;  </div><div class="line">                p-&gt;next[j] = q;  </div><div class="line">            &#125;  </div><div class="line">            p = p-&gt;next[j];  </div><div class="line">        &#125;  </div><div class="line">        p-&gt;flag = <span class="number">1</span>;  </div><div class="line">    &#125;  </div><div class="line">  </div><div class="line">    <span class="built_in">queue</span>&lt;Trie*&gt; Q;  </div><div class="line">    root-&gt;behind = root;  </div><div class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">26</span>; i++)<span class="comment">// 和ac自动机的差别哦，初始状态补边  </span></div><div class="line">    &#123;  </div><div class="line">        <span class="keyword">if</span>(!root-&gt;next[i])  </div><div class="line">        &#123;  </div><div class="line">            root-&gt;next[i] = root;  </div><div class="line">        &#125;  </div><div class="line">        <span class="keyword">else</span>  </div><div class="line">        &#123;  </div><div class="line">            root-&gt;next[i]-&gt;behind = root;  </div><div class="line">            Q.push(root-&gt;next[i]);  </div><div class="line">        &#125;  </div><div class="line">    &#125;  </div><div class="line">    <span class="keyword">while</span>(!Q.empty())  </div><div class="line">    &#123;  </div><div class="line">        Trie *p = Q.front();  </div><div class="line">        Trie *q = p-&gt;behind;  </div><div class="line">        Q.pop();  </div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">26</span>; i++)  </div><div class="line">        &#123;  </div><div class="line">            <span class="keyword">if</span>(!p-&gt;next[i])  </div><div class="line">            &#123;  </div><div class="line">                p-&gt;next[i] = q-&gt;next[i];  </div><div class="line">            &#125;  </div><div class="line">            <span class="keyword">else</span>  </div><div class="line">            &#123;  </div><div class="line">                p-&gt;next[i]-&gt;behind = q-&gt;next[i];  </div><div class="line">                Q.push(p-&gt;next[i]);  </div><div class="line">            &#125;  </div><div class="line">        &#125;  </div><div class="line">    &#125;  </div><div class="line">    <span class="keyword">char</span> article[<span class="number">1000001</span>];  </div><div class="line">    Trie* p = root;  </div><div class="line">    <span class="built_in">cin</span> &gt;&gt; article;  </div><div class="line">    <span class="keyword">bool</span> tag = <span class="literal">false</span>;  </div><div class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; article[i]!=<span class="string">'\0'</span>; i++)  </div><div class="line">    &#123;  </div><div class="line">        <span class="keyword">int</span> j = article[i] - <span class="string">'a'</span>;  </div><div class="line">        p = p-&gt;next[j];  </div><div class="line">        <span class="keyword">if</span>(p-&gt;flag == <span class="number">1</span>)  </div><div class="line">        &#123;  </div><div class="line">            tag = <span class="literal">true</span>;  </div><div class="line">            <span class="built_in">cout</span> &lt;&lt; <span class="string">"YES"</span> &lt;&lt;<span class="built_in">endl</span>;  </div><div class="line">            <span class="keyword">break</span>;  </div><div class="line">        &#125;  </div><div class="line">    &#125;  </div><div class="line">    <span class="keyword">if</span>(tag == <span class="literal">false</span>)  </div><div class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">"NO"</span> &lt;&lt;<span class="built_in">endl</span>;  </div><div class="line">    <span class="keyword">return</span> <span class="number">0</span>;  </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>fail树：<br>因为本人太弱嘛，只能初步简单的提一下fail树及其应用。<br>fail树呢，是将ac自动机（trie图）中的所有fail指针反向，但是不管是Trie图还是AC自动机，它们的fail指针的指向都是一模一样的。<br>我们可以发现，因为一个点只会引出一个fail指针，所以反向之后就证明任意一个点只会有一个点指向他，那就说明这个点的父亲节点只有一个，可知该图是一棵树。我们称之为fail树<br>fail树的应用：<br>如果有n个字符串，所有字符串的长度加起来不超过106，有m个查询，要查询第x个字符串在第y个字符串中出现了多少次。</p>
+<p>如果是使用AC自动机查询，可以直接对字符串构建AC自动机，然后让y去走AC自动机，对于走过的结点，把其权值加1。那么要查询x在y中出现了多少次，便要从底层开始，顺着fail指针把权值上传。<br>然后只要查询x结点的权值是多少就知道x在y中出现了多少次。每次查询的复杂度是O(tot+len[y]),其中tot是AC自动机的结点总数。很多oj上就会直接把ac自动机的方法卡掉</p>
+<p>如果是使用Fail树进行查询，那么只要查询所有子结点的权值和就好了，子结点的权值和可以使用dfs序和树状数组来维护。然后同样让有去走AC自动机，将走过的结点的权值加1，只不过现在是用树状数组来维护权值。<br>那么要查询x在y中出现了多少次，只要进行一次区间查询就可以了，即只要查询x结点的所有子结点就好了（根据fail树的性质），因为其dfs序号是连续的，所以是一次区间查询。可以将查询按照y排序，然后对具有相同y的查询一起查询。每次查询时间复杂度是O(len[y]+log(tot))。<br>后排表白幽幽子大人（）</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ac自动机/" rel="tag"># ac自动机</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/12/02/东方project是什么？/" rel="next" title="东方project是什么？">
+                <i class="fa fa-chevron-left"></i> 东方project是什么？
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/12/03/算法讲解：二分图匹配/" rel="prev" title="算法讲解：二分图匹配">
+                算法讲解：二分图匹配 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/12/03/算法讲解：ac自动机及简单衍生/"
+           data-title="算法讲解：ac自动机及简单衍生" data-url="http://yoursite.com/2016/12/03/算法讲解：ac自动机及简单衍生/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="李丰基" />
+          <p class="site-author-name" itemprop="name">李丰基</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">4</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#undefined"><span class="nav-number">1.</span> <span class="nav-text">AC自动机简介： </span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">李丰基</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"thunderMrbird"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+      
+      <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+      <script src="/js/src/hook-duoshuo.js?v=5.1.0"></script>
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.0"></script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,776 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.useso.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="二分图匹配," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="二分图匹配，自然要先从定义入手，那么二分图是什么呢？二分图：二分图又称作二部图，是图论中的一种特殊模型。 设G=(V,E)是一个无向图，如果顶点V可分割为两个互不相交的子集(A,B)，并且图中的每条边（i，j）所关联的两个顶点i和j分别属于这两个不同的顶点集(i in A,j in B)，则称图G为一个二分图。简单的说，一个图被分成了两部分，相同的部分没有边，那这个图就是二分图，二分图是特殊的图。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="算法讲解：二分图匹配">
+<meta property="og:url" content="http://yoursite.com/2016/12/03/算法讲解：二分图匹配/index.html">
+<meta property="og:site_name" content="thunderMrbird的blog">
+<meta property="og:description" content="二分图匹配，自然要先从定义入手，那么二分图是什么呢？二分图：二分图又称作二部图，是图论中的一种特殊模型。 设G=(V,E)是一个无向图，如果顶点V可分割为两个互不相交的子集(A,B)，并且图中的每条边（i，j）所关联的两个顶点i和j分别属于这两个不同的顶点集(i in A,j in B)，则称图G为一个二分图。简单的说，一个图被分成了两部分，相同的部分没有边，那这个图就是二分图，二分图是特殊的图。">
+<meta property="og:image" content="http://img.blog.csdn.net/20130503155150538">
+<meta property="og:image" content="http://img.blog.csdn.net/20130503155256629">
+<meta property="og:image" content="http://img.blog.csdn.net/20130503155344972">
+<meta property="og:image" content="http://img.blog.csdn.net/20130503155344972">
+<meta property="og:image" content="http://img.blog.csdn.net/20130503155441032">
+<meta property="og:image" content="http://img.blog.csdn.net/20130503155453501">
+<meta property="og:image" content="http://img.blog.csdn.net/20130503155626560">
+<meta property="og:image" content="http://img.blog.csdn.net/20130503162147840">
+<meta property="og:image" content="http://img.blog.csdn.net/20130503160156253">
+<meta property="og:image" content="http://dl.iteye.com/upload/attachment/0078/4288/29a781cc-4459-3cc6-8f8d-6f5d0584424f.jpg">
+<meta property="og:image" content="http://dl.iteye.com/upload/attachment/0078/4290/07a9b14e-682f-344a-856d-3c2531e10683.jpg">
+<meta property="og:image" content="http://dl.iteye.com/upload/attachment/0078/4292/8364bc08-dd7a-3964-bb9d-9f022fccc200.jpg">
+<meta property="og:image" content="http://dl.iteye.com/upload/attachment/0078/4294/73d1c966-bc50-30d3-89da-8c6a97994d92.png">
+<meta property="og:image" content="http://dl.iteye.com/upload/attachment/0078/4302/9126bc13-4660-377f-b65d-1cc70c836695.png">
+<meta property="og:image" content="http://dl.iteye.com/upload/attachment/0078/4296/9e0b0a27-a040-31e7-8a11-ab94265fb58c.png">
+<meta property="og:updated_time" content="2016-12-03T15:27:02.034Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="算法讲解：二分图匹配">
+<meta name="twitter:description" content="二分图匹配，自然要先从定义入手，那么二分图是什么呢？二分图：二分图又称作二部图，是图论中的一种特殊模型。 设G=(V,E)是一个无向图，如果顶点V可分割为两个互不相交的子集(A,B)，并且图中的每条边（i，j）所关联的两个顶点i和j分别属于这两个不同的顶点集(i in A,j in B)，则称图G为一个二分图。简单的说，一个图被分成了两部分，相同的部分没有边，那这个图就是二分图，二分图是特殊的图。">
+<meta name="twitter:image" content="http://img.blog.csdn.net/20130503155150538">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '6359826799316174000',
+      author: 'thunderMrbird'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/12/03/算法讲解：二分图匹配/"/>
+
+
+
+
+
+  <title> 算法讲解：二分图匹配 | thunderMrbird的blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">thunderMrbird的blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/12/03/算法讲解：二分图匹配/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="李丰基">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.gif">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="thunderMrbird的blog">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="thunderMrbird的blog" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                算法讲解：二分图匹配
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-12-03T23:15:04+08:00">
+                2016-12-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/算法/" itemprop="url" rel="index">
+                    <span itemprop="name">算法</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <a href="/2016/12/03/算法讲解：二分图匹配/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/12/03/算法讲解：二分图匹配/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>二分图匹配，自然要先从定义入手，那么二分图是什么呢？<br>二分图：<br>二分图又称作二部图，是图论中的一种特殊模型。 设G=(V,E)是一个无向图，如果顶点V可分割为两个互不相交的子集(A,B)，并且图中的每条边（i，j）所关联的两个顶点i和j分别属于这两个不同的顶点集(i in A,j in B)，则称图G为一个二分图。<br>简单的说，一个图被分成了两部分，相同的部分没有边，那这个图就是二分图，二分图是特殊的图。<br>匹配：<br><a id="more"></a><br>给定一个二分图G，在G的一个子图M中，M的边集{E}中的任意两条边都不依附于同一个顶点，则称M是一个匹配。<br>极大匹配(Maximal Matching)是指在当前已完成的匹配下,无法再通过增加未完成匹配的边的方式来增加匹配的边数。最大匹配(maximum matching)是所有极大匹配当中边数最大的一个匹配。选择这样的边数最大的子集称为图的最大匹配问题。<br>如果一个匹配中，图中的每个顶点都和图中某条边相关联，则称此匹配为完全匹配，也称作完备匹配。<br>求二分图匹配可以用最大流(Maximal Flow)或者匈牙利算法(Hungarian Algorithm)<br>注意匈牙利算法，除了二分图多重匹配外在二分图匹配中都可以使用。<br>注：二分图匹配中还有一个hk算法，复杂度为o（sqrt（n）<em>e）由于复杂度降低较低，代码量飙升而且绝大多数情况下没人会闲的卡个sqrt的复杂度。。在此先不讲了，有兴趣可以自己百度，貌似卡这个算法的只有hdu2389<br>嘛 首先我们讲解一下匈牙利算法的过程：<br>匈牙利算法：<br>匈牙利算法几乎是二分图匹配的核心算法，除了二分图多重匹配外均可使用<br>匈牙利算法实际上就是一种网络流的思想，其核心就是寻找增广路。具体操作就是嗯。。拉郎配<br><em>*注：以下转自 <a href="http://blog.csdn.NET/dark_scope/article/details/8880547" target="_blank" rel="external"></a></em></em><br>匈牙利算法是由匈牙利数学家Edmonds于1965年提出，因而得名。匈牙利算法是基于Hall定理中充分性证明的思想，它是部图匹配最常见的算法，该算法的核心就是寻找增广路径，它是一种用增广路径求二分图最大匹配的算法。<br>——-等等，看得头大？那么请看下面的版本：<br>通过数代人的努力，你终于赶上了剩男剩女的大潮，假设你是一位光荣的新世纪媒人，在你的手上有N个剩男，M个剩女，每个人都可能对多名异性有好感（惊讶-_-||暂时不考虑特殊的性取向），如果一对男女互有好感，那么你就可以把这一对撮合在一起，现在让我们无视掉所有的单相思（好忧伤的感觉快哭了），你拥有的大概就是下面这样一张关系图，每一条连线都表示互有好感。<br><img src="http://img.blog.csdn.net/20130503155150538"><br>本着救人一命，胜造七级浮屠的原则，你想要尽可能地撮合更多的情侣，匈牙利算法的工作模式会教你这样做：</p>
+<hr>
+<p>一： 先试着给1号男生找妹子，发现第一个和他相连的1号女生还名花无主，got it，连上一条蓝线<br><img src="http://img.blog.csdn.net/20130503155256629"></p>
+<hr>
+<p>二：接着给2号男生找妹子，发现第一个和他相连的2号女生名花无主，got it<br><img src="http://img.blog.csdn.net/20130503155344972"></p>
+<hr>
+<p>三：接下来是3号男生，很遗憾1号女生已经有主了，怎么办呢？<br>我们试着给之前1号女生匹配的男生（也就是1号男生）另外分配一个妹子。<br>(黄色表示这条边被临时拆掉)<br><img src="http://img.blog.csdn.net/20130503155344972"><br>与1号男生相连的第二个女生是2号女生，但是2号女生也有主了，怎么办呢？我们再试着给2号女生的原配(发火发火)重新找个妹子(注意这个步骤和上面是一样的，这是一个递归的过程)<br><img src="http://img.blog.csdn.net/20130503155441032"></p>
+<p>此时发现2号男生还能找到3号女生，那么之前的问题迎刃而解了，回溯回去<br>2号男生可以找3号妹子 ~~<br><img src="http://img.blog.csdn.net/20130503155453501"><br>1号男生可以找2号妹子了~~<br><img src="http://img.blog.csdn.net/20130503155626560"><br>3号男生可以找1号妹子<br><img src="http://img.blog.csdn.net/20130503162147840"><br>所以第三步最后的结果就是：<br><img src="http://img.blog.csdn.net/20130503160156253"><br>**<br>四： 接下来是4号男生，很遗憾，按照第三步的节奏我们没法给4号男生腾出来一个妹子，我们实在是无能为力了……香吉士同学走好。</p>
+<hr>
+<p>这就是匈牙利算法的流程，其中找妹子是个递归的过程，最最关键的字就是“腾”字<br>其原则大概是：<strong>有机会上，没机会创造机会也要上</strong><br> hdu2063：<br>hdu2063就是一道裸二分图最大匹配的问题，直接上匈牙利算法即可<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cstdio&gt;</span>  </span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cstring&gt;</span>  </span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span>  </span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;queue&gt;</span>  </span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;vector&gt;</span>  </span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cmath&gt;</span>  </span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;algorithm&gt;</span>  </span></div><div class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;  </div><div class="line"><span class="keyword">const</span> <span class="keyword">int</span> N=<span class="number">505</span>;  </div><div class="line"><span class="keyword">int</span> line[N][N];  </div><div class="line"><span class="keyword">int</span> girl[N],used[N];  </div><div class="line"><span class="keyword">int</span> k,m,n;  </div><div class="line"><span class="function"><span class="keyword">bool</span> <span class="title">found</span><span class="params">(<span class="keyword">int</span> x)</span>  </span></div><div class="line">&#123;  </div><div class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>; i&lt;=n; i++)  </div><div class="line">    &#123;  </div><div class="line">        <span class="keyword">if</span>(line[x][i]&amp;&amp;!used[i])  </div><div class="line">        &#123;  </div><div class="line">            used[i]=<span class="number">1</span>;  </div><div class="line">            <span class="keyword">if</span>(girl[i]==<span class="number">0</span>||found(girl[i]))  </div><div class="line">            &#123;  </div><div class="line">                girl[i]=x;  </div><div class="line">                <span class="keyword">return</span> <span class="number">1</span>;  </div><div class="line">            &#125;  </div><div class="line">        &#125;  </div><div class="line">    &#125;  </div><div class="line">    <span class="keyword">return</span> <span class="number">0</span>;  </div><div class="line">&#125;  </div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span>  </span></div><div class="line">&#123;  </div><div class="line">    <span class="keyword">int</span> x,y;  </div><div class="line">    <span class="keyword">while</span>(<span class="built_in">scanf</span>(<span class="string">"%d"</span>,&amp;k)&amp;&amp;k)  </div><div class="line">    &#123;  </div><div class="line">        <span class="built_in">scanf</span>(<span class="string">"%d %d"</span>,&amp;m,&amp;n);  </div><div class="line">        <span class="built_in">memset</span>(line,<span class="number">0</span>,<span class="keyword">sizeof</span>(line));  </div><div class="line">        <span class="built_in">memset</span>(girl,<span class="number">0</span>,<span class="keyword">sizeof</span>(girl));  </div><div class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;k; i++)  </div><div class="line">        &#123;  </div><div class="line">            <span class="built_in">scanf</span>(<span class="string">"%d %d"</span>,&amp;x,&amp;y);  </div><div class="line">            line[x][y]=<span class="number">1</span>;  </div><div class="line">        &#125;  </div><div class="line">        <span class="keyword">int</span> sum=<span class="number">0</span>;  </div><div class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>; i&lt;=m; i++)  </div><div class="line">        &#123;  </div><div class="line">            <span class="built_in">memset</span>(used,<span class="number">0</span>,<span class="keyword">sizeof</span>(used));  </div><div class="line">            <span class="keyword">if</span>(found(i)) sum++;  </div><div class="line">        &#125;  </div><div class="line">        <span class="built_in">printf</span>(<span class="string">"%d\n"</span>,sum);  </div><div class="line">    &#125;  </div><div class="line">    <span class="keyword">return</span> <span class="number">0</span>;  </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>二分图最优匹配：<br>接下来就是二分图最优匹配的km算法了<br>km算法理解起来着实很困难，我其实只能照着代码讲，不然根本讲不明白。不过听一个学长说要理解思想而不是代码。。。那就试着空讲一下吧。<br>一般对KM算法的描述，基本上可以概括成以下几个步骤：<br>（1） 初始化可行标杆<br>（2） 用匈牙利算法寻找完备匹配<br>（3） 若未找到完备匹配则修改可行标杆<br>（4） 重复（2）（3）直到找到相等子图的完备匹配 </p>
+<p>关于该算法的流程及实施，网上有很多介绍，基本上都是围绕可行标杆如何修改而进行的讨论，至于原理并没有给出深入的探讨。 </p>
+<p>KM算法是用于寻找带权二分图最佳匹配的算法。 </p>
+<p>二分图是这样一种图：所有顶点可以分成两个集：X和Y，其中X和Y中的任意两个在同一个集中的点都不相连，而来自X集的顶点与来自Y集的顶点有连线。当这些连线被赋于一定的权重时，这样的二分图便是带权二分图。 </p>
+<p>二分图匹配是指求出一组边，其中的顶点分别在两个集合中，且任意两条边都没有相同的顶点，这组边叫做二分图的匹配，而所能得到的最大的边的个数，叫做二分图的最大匹配。 </p>
+<p>我们也可以换个角度看二分图的最大匹配，即二分图的每条边的默认权重为1，我们求到的二分图的最大匹配的权重最大。对于带权二分图，其边有大于0的权重，找到一组匹配，使其权重最大，即为带权二分图的最佳匹配。 </p>
+<p>匈牙利算法一般用于寻找二分图的最大匹配。算法根据一定的规则选择二分图的边加入匹配子图中，其基本模式为： </p>
+<p>初始化匹配子图为空<br>While 找得到增广路径<br>Do 把增广路径添加到匹配子图中 </p>
+<p>增广路径有如下特性： </p>
+<ol>
+<li>有奇数条边 </li>
+<li>起点在二分图的X边，终点在二分图的Y边 </li>
+<li>路径上的点一定是一个在X边，一个在Y边，交错出现。 </li>
+<li>整条路径上没有重复的点 </li>
+<li>起点和终点都是目前还没有配对的点，其他的点都已经出现在匹配子图中 </li>
+<li>路径上的所有第奇数条边都是目前还没有进入目前的匹配子图的边，而所有第偶数条边都已经进入目前的匹配子图。奇数边比偶数边多一条边 </li>
+<li>于是当我们把所有第奇数条边都加到匹配子图并把条偶数条边都删除，匹配数增加了1. </li>
+</ol>
+<p>例如下图，蓝色的是当前的匹配子图，目前只有边x0y0，然后通过x1找到了增广路径：x1y0-&gt;y0x0-&gt;x0y2<br><img src="http://dl.iteye.com/upload/attachment/0078/4288/29a781cc-4459-3cc6-8f8d-6f5d0584424f.jpg"></p>
+<p>其中第奇数第边x1y0和x0y2不在当前的匹配子图中，而第偶数条边x0y0在匹配子图中，通过添加x1y0和x0y2到匹配子图并删除x0y0，使得匹配数由1增加到了2。每找到一条增广路径，通过添加删除边，我们总是能使匹配数加1. </p>
+<p>增广路径有两种寻径方法，一个是深搜，一个是宽搜。例如从x2出发寻找增广路径，如果是深搜，x2找到y0匹配，但发现y0已经被x1匹配了，于是就深入到x1，去为x1找新的匹配节点，结果发现x1没有其他的匹配节点，于是匹配失败，x2接着找y1，发现y1可以匹配，于是就找到了新的增广路径。如果是宽搜，x1找到y0节点的时候，由于不能马上得到一个合法的匹配，于是将它做为候选项放入队列中，并接着找y1，由于y1已经匹配，于是匹配成功返回了。相对来说，深搜要容易理解些，其栈可以由递归过程来维护，而宽搜则需要自己维护一个队列，并对一路过来的路线自己做标记，实现起来比较麻烦。 </p>
+<p>对于带权重的二分图来说，我们可以把它看成一个所有X集合的顶点到所有Y集合的顶点均有边的二分图（把原来没有的边添加入二分图，权重为0即可），也就是说它必定存在完备匹配（即其匹配数为min(|X|,|Y|)）。为了使权重达到最大，我们实际上是通过贪心算法来选边，形成一个新的二分图（我们下面叫它二分子图好了），并在该二分图的基础上寻找最大匹配，当该最大匹配为完备匹配时，我们可以确定该匹配为最佳匹配。（在这里我们如此定义最大匹配：匹配边数最多的匹配和最佳匹配：匹配边的权重和最大的匹配。） </p>
+<p>贪心算法总是将最优的边优先加入二分子图，该最优的边将对当前的匹配子图带来最大的贡献，贡献的衡量是通过标杆来实现的。下面我们将通过一个实例来解释这个过程。 </p>
+<p>有带权二分图：<br><img src="http://dl.iteye.com/upload/attachment/0078/4290/07a9b14e-682f-344a-856d-3c2531e10683.jpg"></p>
+<p>算法把权重转换成标杆，X集跟Y集的每个顶点各有一个标杆值，初始情况下权重全部放在X集上。由于每个顶点都将至少会有一个匹配点，贪心算法必然优先选择该顶点上权重最大的边（最理想的情况下，这些边正好没有交点，于是我们自然得到了最佳匹配）。最初的二分子图为：（可以看到初始化时X标杆为该顶点上的最大权重，而Y标杆为0）<br><img src="http://dl.iteye.com/upload/attachment/0078/4292/8364bc08-dd7a-3964-bb9d-9f022fccc200.jpg"></p>
+<p>从X0找增广路径，找到X0Y4；从X1找不到增广路径，也就是说，必须往二分子图里边添加新的边，使得X1能找到它的匹配，同时使权重总和添加最大。由于X1通往Y4而Y4已经被X0匹配，所以有两种可能，一个是为X0找一个新的匹配点并把Y4让给X1，或者是为X1找一个新的匹配点，现在我们将要看到标杆的作用了。根据传统的算法描述，能够进入二分子图的边的条件为L(x)+L(y)&gt;=weight(xy)。当找不到增广路径时，对于搜索过的路径上的XY点，设该路径上的X顶点集为S，Y顶点集为T，对所有在S中的点xi及不在T中的点yj，计算d=min{(L(xi)+L(yj)-weight(xiyj))}，从S集中的X标杆中减去d，并将其加入到T集中的Y的标杆中，由于S集中的X标杆减少了，而不在T中的Y标杆不变，相当于这两个集合中的L(x)+L(y)变小了，也就是，有新的边可以加入二分子图了。从贪心选边的角度看，我们可以为X0选择新的边而抛弃原先的二分子图中的匹配边，也可以为X1选择新的边而抛弃原先的二分子图中的匹配边，因为我们不能同时选择X0Y4和X1Y4，因为这是一个不合法匹配，这个时候，d=min{(L(xi)+L(yj)-weight(xiyj))}的意义就在于，我们选择一条新的边，这条边将被加入匹配子图中使得匹配合法，选择这条边形成的匹配子图，将比原先的匹配子图加上这条非法边组成的非法匹配子图的权重和（如果它是合法的，它将是最大的）小最少，即权重最大了。好绕口的。用数学的方式表达，设原先的不合法匹配（它的权重最大，因为我们总是从权重最大的边找起的）的权重为W，新的合法匹配为W’，d为min{W-W’i}。在这个例子中，S={X0, X1}，Y={Y4}，求出最小值d=L(X1)+L(Y0)-weight(X1Y0)=2，得到新的二分子图：<br><img src="http://dl.iteye.com/upload/attachment/0078/4294/73d1c966-bc50-30d3-89da-8c6a97994d92.png"></p>
+<p>重新为X1寻找增广路径，找到X1Y0，可以看到新的匹配子图的权重为9+6=15，比原先的不合法的匹配的权重9+8=17正好少d=2。<br>接下来从X2出发找不到增广路径，其走过的路径如蓝色的路线所示。形成的非法匹配子图：X0Y4，X1Y0及X2Y0的权重和为22。在这条路径上，只要为S={X0，X1，X2}中的任意一个顶点找到新的匹配，就可以解决这个问题，于是又开始求d。<br>d=L(X0)+L(Y2)-weight(X0Y2)=L(X2)+L(Y1)-weight(X2Y1)=1.<br>新的二分子图为：<br><img src="http://dl.iteye.com/upload/attachment/0078/4302/9126bc13-4660-377f-b65d-1cc70c836695.png"></p>
+<p>重新为X2寻找增广路径，如果我们使用的是深搜，会得到路径：X2Y0-&gt;Y0X1-&gt;X1Y4-&gt;Y4X0-&gt;X0Y2，即奇数条边而删除偶数条边，新的匹配子图中由这几个顶点得到的新的权重为21；如果使用的是宽搜，会得到路径X2Y1，另上原先的两条匹配边，权重为21。假设我们使用的是宽搜，得到的新的匹配子图为：<br><img src="http://dl.iteye.com/upload/attachment/0078/4296/9e0b0a27-a040-31e7-8a11-ab94265fb58c.png"></p>
+<p>接下来依次类推，直到为X4找到一个匹配点。 </p>
+<p>KM算法的最大特点在于利用标杆和权重来生成一个二分子图，在该二分子图上面找最大匹配，而且，当些仅当找到完备匹配，才能得到最佳匹配。标杆和权重的作用在于限制新边的加入，使得加入的新边总是能为子图添加匹配数，同时又令权重和得到最大的提高。<br>二分图多重匹配：<br>设源点汇点直接网络流即可，在此不细讲，会在网络流部分进行讲解</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/二分图匹配/" rel="tag"># 二分图匹配</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/12/03/算法讲解：ac自动机及简单衍生/" rel="next" title="算法讲解：ac自动机及简单衍生">
+                <i class="fa fa-chevron-left"></i> 算法讲解：ac自动机及简单衍生
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/12/03/算法讲解：二分图匹配/"
+           data-title="算法讲解：二分图匹配" data-url="http://yoursite.com/2016/12/03/算法讲解：二分图匹配/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="李丰基" />
+          <p class="site-author-name" itemprop="name">李丰基</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">4</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">李丰基</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"thunderMrbird"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+      
+      <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+      <script src="/js/src/hook-duoshuo.js?v=5.1.0"></script>
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.0"></script>
+
+
+
+</body>
+</html>
